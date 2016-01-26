@@ -40,7 +40,7 @@ def main():
 			_ps.append((_l.strip(), _d_out))
 
 	import multi_task
-	multi_task.run(download, multi_task.load(_ps), _opts, (multi_task.create_lock(), ))
+	multi_task.run(download, multi_task.load(_ps, _opts), _opts, (multi_task.create_lock(), ))
 
 def _usage():
 	import argparse
