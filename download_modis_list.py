@@ -1,4 +1,10 @@
-
+'''
+File: download_modis_list.py
+Author: Min Feng
+Version: 0.1
+Create: 2016-01-26 14:58:55
+Description: download MODIS data list
+'''
 def download_folder_http(url, ls, fout=None):
 	import urllib2
 

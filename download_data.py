@@ -1,4 +1,10 @@
-
+'''
+File: download_data.py
+Author: Min Feng
+Version: 0.1
+Create: 2016-01-26 14:58:42
+Description: download data in a list using multi-task
+'''
 import logging
 
 def download(url, pos, lock):
@@ -19,7 +25,8 @@ def main():
 	os.path.exists(_d_out) or os.makedirs(_d_out)
 
 	_ps = []
-	with open(_opts.input) as _fi:
+	import gzip
+	with gzip.open(_opts.input, 'r') if _opts.input.endswith('.gz') else open(_opts.input, 'r') as _fi:
 		for _l in _fi:
 			_l = _l.strip()
 			if not _l:
@@ -33,8 +40,7 @@ def main():
 			_ps.append((_l.strip(), _d_out))
 
 	import multi_task
-	_pool = multi_task.Pool(download, _ps, _opts.task_num)
-	_pool.run((_pool.create_lock(),))
+	multi_task.run(download, _opts.load(_ps), _opts, (multi_task.create_lock(), ))
 
 def _usage():
 	import argparse
@@ -47,8 +53,9 @@ def _usage():
 	_p.add_argument('-i', '--input', dest='input', required=True)
 	_p.add_argument('-s', '--skip', dest='skip', default=False, action='store_true')
 	_p.add_argument('-o', '--output', dest='output', required=True)
-	_p.add_argument('-n', '--task-num', dest='task_num', type=int, default=5)
 
+	import multi_task
+	multi_task.add_task_opts(_p)
 
 	return _p.parse_args()
 

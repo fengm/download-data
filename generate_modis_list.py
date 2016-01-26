@@ -1,14 +1,26 @@
+'''
+File: generate_modis_list.py
+Author: Min Feng
+Version: 0.1
+Create: 2016-01-26 14:59:23
+Description: generate a list of MODIS data for given years, tile
+'''
 
-
-def generate_modis_urls(f_urls, tiles, years, f_out):
+def generate_modis_urls(f_url, tiles, years, f_out):
 	import re
 
 	print 'tiles:', tiles
 	print 'years:', years
 
 	_ls = []
-	for _l in open(f_urls).read().splitlines():
-		if _l:
+
+	import gzip
+	with gzip.open(f_url, 'r') if f_url.endswith('.gz') else open(f_url, 'r') as _fi:
+		for _l in _fi.read().splitlines():
+			_l = _l.strip()
+			if not _l:
+				continue
+
 			_r = re.search('A(\d{4})\d{3}\.(h\d{2}v\d{2})', _l)
 
 			_t = _r.group(2)
@@ -24,15 +36,16 @@ def generate_modis_urls(f_urls, tiles, years, f_out):
 
 	print 'found', len(_ls), 'files'
 	if len(_ls):
-		open(f_out, 'w').write('\n'.join(_ls))
+		with gzip.open(f_out, 'w') if f_out.endswith('.gz') else open(f_out, 'w') as _fo:
+			_fo.write('\n'.join(_ls))
 
 def usage():
 	import argparse
 
 	_p = argparse.ArgumentParser()
 
-	_p.add_argument('-f', '--file-urls', dest='fileurls', default='MOD09GA_20111010.txt')
-	_p.add_argument('-y', '--year', dest='year', type=int, action='append', default=[])
+	_p.add_argument('-i', '--file-urls', dest='fileurls')
+	_p.add_argument('-y', '--year', dest='year', type=int, nargs='*', default=[])
 	_p.add_argument('-t', '--tiles', dest='tiles', nargs='*', default=[])
 	_p.add_argument('-o', '--output', dest='output', required=True)
 
